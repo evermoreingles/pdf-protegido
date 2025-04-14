@@ -6,7 +6,7 @@
   <title>Evermore Inglês Online - Material Protegido</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
   <style>
-    body { font-family: Arial, sans-serif; text-align: center; padding: 2rem; background-color: #f8f8f8; }
+    body { font-family: Arial, sans-serif; text-align: center; padding: 2rem; background-color: #f8f8f8; user-select: none; }
     #login-container { display: block; }
     #pdf-container { display: none; }
     canvas { border: 1px solid #ccc; margin-bottom: 1rem; max-width: 100%; }
@@ -67,13 +67,23 @@
       fetch(url).then(r => r.text()).then(console.log).catch(console.error);
     }
 
-    document.addEventListener("keydown", e => {
-      if (e.ctrlKey && (e.key === "p" || e.key === "s")) {
+    // BLOQUEIOS
+    document.addEventListener("keydown", function(e) {
+      if ((e.ctrlKey && ["s", "p", "u", "c", "a"].includes(e.key.toLowerCase())) ||
+          (e.key === "F12") ||
+          (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "i") ||
+          (e.key === "PrintScreen")) {
         e.preventDefault();
-        alert("Função desativada.");
+        alert("Função bloqueada. Este conteúdo é protegido pela Evermore.");
+        return false;
       }
     });
-    document.addEventListener("contextmenu", e => e.preventDefault());
+    document.addEventListener("contextmenu", function(e) {
+      e.preventDefault();
+    });
+    document.addEventListener("selectstart", function(e) {
+      e.preventDefault();
+    });
   </script>
 </body>
 </html>
