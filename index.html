@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PDF Protegido</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+  <style>
+    body { font-family: Arial; text-align: center; padding: 2rem; }
+    #login-container { display: block; }
+    #pdf-container { display: none; }
+    canvas { border: 1px solid #ccc; max-width: 100%; }
+  </style>
+</head>
+<body>
+  <div id="login-container">
+    <h2>Acesso restrito</h2>
+    <input type="password" id="password" placeholder="Digite a senha">
+    <button onclick="checkPassword()">Entrar</button>
+  </div>
+
+  <div id="pdf-container">
+    <h2>Material Protegido</h2>
+    <canvas id="pdf-viewer"></canvas>
+  </div>
+
+  <script>
+    const senhaCorreta = "1234"; // Troque pela senha que quiser
+
+    function checkPassword() {
+      const senha = document.getElementById("password").value;
+      if (senha === senhaCorreta) {
+        document.getElementById("login-container").style.display = "none";
+        document.getElementById("pdf-container").style.display = "block";
+        renderPDF("material.pdf"); // Nome do seu PDF
+        registrarAcesso();
+      } else {
+        alert("Senha incorreta!");
+      }
+    }
+
+    function renderPDF(url) {
+      pdfjsLib.getDocument(url).promise.then(pdf => {
+        pdf.getPage(1).then(page => {
+          const canvas = document.getElementById("pdf-viewer");
+          const ctx = canvas.getContext("2d");
+          const viewport = page.getViewport({ scale: 1.5 });
+          canvas.width = viewport.width;
+          canvas.height = viewport.height;
+          page.render({ canvasContext: ctx, viewport: viewport });
+        });
+      });
+    }
+
+    function registrarAcesso() {
+      let url = "SUA_URL_DA_API" + "?usuario=Visitante&navegador=" + navigator.userAgent;
+      fetch(url).then(r => r.text()).then(console.log).catch(console.error);
+    }
+
+    // Proteções
+    document.addEventListener("keydown", e => {
+      if (e.ctrlKey && (e.key === "p" || e.key === "s")) {
+        e.preventDefault();
+        alert("Função desativada.");
+      }
+    });
+    document.addEventListener("contextmenu", e => e.preventDefault());
+  </script>
+</body>
+</html>
