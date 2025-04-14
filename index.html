@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Evermore Inglês Online - Material Protegido</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; padding: 2rem; background-color: #f8f8f8; }
+    #login-container { display: block; }
+    #pdf-container { display: none; }
+    canvas { border: 1px solid #ccc; margin-bottom: 1rem; max-width: 100%; }
+    img.logo { max-width: 150px; margin-bottom: 1rem; }
+    h1 { margin-top: 0.5rem; }
+  </style>
+</head>
+<body>
+  <div id="login-container">
+    <img src="logo.png" alt="Logo" class="logo">
+    <h1>Evermore Inglês Online</h1>
+    <h2>Acesso restrito</h2>
+    <input type="password" id="password" placeholder="Digite a senha">
+    <button onclick="checkPassword()">Entrar</button>
+  </div>
+
+  <div id="pdf-container">
+    <img src="logo.png" alt="Logo" class="logo">
+    <h1>Evermore Inglês Online</h1>
+    <h2>Material Protegido</h2>
+    <div id="pdf-pages"></div>
+  </div>
+
+  <script>
+    const senhaCorreta = "EvermoreDigital2025";
+
+    function checkPassword() {
+      const senha = document.getElementById("password").value;
+      if (senha === senhaCorreta) {
+        document.getElementById("login-container").style.display = "none";
+        document.getElementById("pdf-container").style.display = "block";
+        renderAllPages("material.pdf");
+        registrarAcesso();
+      } else {
+        alert("Senha incorreta!");
+      }
+    }
+
+    function renderAllPages(url) {
+      const container = document.getElementById("pdf-pages");
+      pdfjsLib.getDocument(url).promise.then(pdf => {
+        for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+          pdf.getPage(pageNum).then(page => {
+            const canvas = document.createElement("canvas");
+            const ctx = canvas.getContext("2d");
+            const viewport = page.getViewport({ scale: 1.5 });
+            canvas.width = viewport.width;
+            canvas.height = viewport.height;
+            container.appendChild(canvas);
+            page.render({ canvasContext: ctx, viewport: viewport });
+          });
+        }
+      });
+    }
+
+    function registrarAcesso() {
+      let url = "SUA_URL_DA_API" + "?usuario=Visitante&navegador=" + navigator.userAgent;
+      fetch(url).then(r => r.text()).then(console.log).catch(console.error);
+    }
+
+    document.addEventListener("keydown", e => {
+      if (e.ctrlKey && (e.key === "p" || e.key === "s")) {
+        e.preventDefault();
+        alert("Função desativada.");
+      }
+    });
+    document.addEventListener("contextmenu", e => e.preventDefault());
+  </script>
+</body>
+</html>
