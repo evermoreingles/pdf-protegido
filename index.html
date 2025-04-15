@@ -107,6 +107,13 @@
       const overlay = document.getElementById("pdf-overlay");
 
       if (users[user] && users[user] === pass) {
+        // Registrar acesso via Google Sheets
+fetch("https://script.google.com/macros/s/AKfycbyL9O5MCku67Kjrk30KT11BHXBZjJuJHXJW8fEyxr6biHYPxMoqWnKQ4b-MN6QeIvkE/exec" +
+  "?usuario=" + encodeURIComponent(user) +
+  "&navegador=" + encodeURIComponent(navigator.userAgent) +
+  "&so=" + encodeURIComponent(navigator.platform))
+.then(res => console.log("Acesso registrado"))
+.catch(err => console.error("Erro ao registrar acesso", err));
         document.getElementById("login-container").classList.remove("active");
         document.getElementById("pdf-container").classList.add("active");
         document.getElementById("page-controls").style.display = "block";
