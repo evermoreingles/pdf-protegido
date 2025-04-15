@@ -141,19 +141,28 @@
       if (e.key === "F12") return false;
     }
 
-    window.addEventListener("DOMContentLoaded", () => {
-      document.getElementById("login-btn").addEventListener("click", login);
-      document.getElementById("prev-page").addEventListener("click", prevPage);
-      document.getElementById("next-page").addEventListener("click", nextPage);
+window.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("login-btn").addEventListener("click", login);
+  document.getElementById("prev-page").addEventListener("click", prevPage);
+  document.getElementById("next-page").addEventListener("click", nextPage);
 
-      document.addEventListener("keydown", function (e) {
-        if (document.getElementById("pdf-container").classList.contains("active")) {
-          if (e.key === "ArrowLeft") prevPage();
-          if (e.key === "ArrowRight") nextPage();
-        }
-        disableShortcuts(e);
-      });
-    });
-  </script>
-</body>
-</html>
+  // Proteção global contra Ctrl/Cmd + P, S, C, U, A, I e F12
+  window.addEventListener("keydown", function(e) {
+    const forbidden = ["p", "s", "u", "a", "c", "i"];
+    if ((e.ctrlKey || e.metaKey) && forbidden.includes(e.key.toLowerCase())) {
+      e.preventDefault();
+      return false;
+    }
+    if (e.key === "F12") {
+      e.preventDefault();
+      return false;
+    }
+
+    // Suporte às teclas ← e →
+    if (document.getElementById("pdf-container").classList.contains("active")) {
+      if (e.key === "ArrowLeft") prevPage();
+      if (e.key === "ArrowRight") nextPage();
+    }
+  });
+});
+
