@@ -1,0 +1,159 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PDF Protegido - Evermore</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f7f7f7;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+    #login-container, #pdf-container {
+      display: none;
+      padding: 2rem;
+    }
+    #login-container.active, #pdf-container.active {
+      display: block;
+    }
+    .watermark {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(-30deg);
+      font-size: 3rem;
+      color: rgba(0, 0, 0, 0.1);
+      pointer-events: none;
+      z-index: 1000;
+      white-space: nowrap;
+    }
+    canvas {
+      display: block;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+    #overlay {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      z-index: 2;
+    }
+    .canvas-container {
+      position: relative;
+      display: inline-block;
+    }
+    img.logo {
+      max-width: 180px;
+      margin: 2rem auto;
+    }
+  </style>
+</head>
+<body oncontextmenu="return false">
+  <img src="logo.png" class="logo" alt="Logo Evermore" />
+  <div class="watermark">Evermore | Acesso restrito</div>
+
+  <div id="login-container" class="active">
+    <h2>Acesso Restrito</h2>
+    <input type="text" id="username" placeholder="Usuário" /><br /><br />
+    <input type="password" id="password" placeholder="Senha" /><br /><br />
+    <button id="login-btn">Entrar</button>
+    <p id="login-error" style="color: red;"></p>
+  </div>
+
+  <div id="pdf-container">
+    <div>
+      <button id="prev-page" style="margin: 1rem;">⬅ Página Anterior</button>
+      <button id="next-page" style="margin: 1rem;">Próxima Página ➡</button>
+    </div>
+    <div class="canvas-container">
+      <canvas id="pdf-render"></canvas>
+      <div id="overlay"></div>
+    </div>
+    <p id="page-info"></p>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+  <script>
+    const users = {
+      "Richard": "rmartins2025",
+      "Evermore": "Digital2025",
+      "Arissa": "akudo2025"
+    };
+
+    let pdfDoc = null;
+    let pageNum = 1;
+    const url = "material.pdf";
+
+    function renderPage() {
+      pdfDoc.getPage(pageNum).then(page => {
+        const canvas = document.getElementById("pdf-render");
+        const ctx = canvas.getContext("2d");
+        const viewport = page.getViewport({ scale: 1.5 });
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+        page.render({ canvasContext: ctx, viewport });
+        document.getElementById("page-info").innerText = `Página ${pageNum} de ${pdfDoc.numPages}`;
+      });
+    }
+
+    function loadPDF() {
+      pdfjsLib.getDocument(url).promise.then(pdf => {
+        pdfDoc = pdf;
+        renderPage();
+      });
+    }
+
+    function login() {
+      const user = document.getElementById("username").value;
+      const pass = document.getElementById("password").value;
+      if (users[user] && users[user] === pass) {
+        document.getElementById("login-container").classList.remove("active");
+        document.getElementById("pdf-container").classList.add("active");
+        document.getElementById("overlay").style.display = "block";
+        loadPDF();
+      } else {
+        document.getElementById("login-error").innerText = "Usuário ou senha inválidos.";
+      }
+    }
+
+    function prevPage() {
+      if (pageNum <= 1) return;
+      pageNum--;
+      renderPage();
+    }
+
+    function nextPage() {
+      if (!pdfDoc || pageNum >= pdfDoc.numPages) return;
+      pageNum++;
+      renderPage();
+    }
+
+    function disableShortcuts(e) {
+      const forbidden = ["s", "p", "u", "a", "c", "i"];
+      if ((e.ctrlKey || e.metaKey) && forbidden.includes(e.key.toLowerCase())) return false;
+      if (e.key === "F12") return false;
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("login-btn").addEventListener("click", login);
+      document.getElementById("prev-page").addEventListener("click", prevPage);
+      document.getElementById("next-page").addEventListener("click", nextPage);
+
+      document.addEventListener("keydown", function (e) {
+        if (document.getElementById("pdf-container").classList.contains("active")) {
+          if (e.key === "ArrowLeft") prevPage();
+          if (e.key === "ArrowRight") nextPage();
+        }
+        disableShortcuts(e);
+      });
+    });
+  </script>
+</body>
+</html>
