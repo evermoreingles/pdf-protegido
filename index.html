@@ -3,103 +3,116 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PDF Protegido - Evermore</title>
+  <title>Portal do Aluno Evermore</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
   <style>
+    @font-face {
+      font-family: 'Sherika';
+      src: url('Sherika.woff2') format('woff2');
+    }
+
     body {
-      font-family: sans-serif;
-      background: #879b99;
-      text-align: center;
       margin: 0;
       padding: 0;
+      font-family: 'Sherika', sans-serif;
+      background: url('bg-evermore.png') no-repeat center center fixed;
+      background-size: cover;
+      text-align: center;
+      color: #1e2e2f;
     }
-    #login-container, #pdf-container {
-      display: none;
-      padding: 2rem;
+
+    .logo {
+      margin-top: 40px;
+      max-width: 220px;
     }
-    #login-container.active, #pdf-container.active {
+
+    #login-container {
+      margin-top: 30px;
+    }
+
+    #login-container h2 {
+      font-size: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .login-input {
       display: block;
+      margin: 0.5rem auto;
+      padding: 0.75rem 1.5rem;
+      width: 250px;
+      border-radius: 30px;
+      border: 1px solid #1e2e2f;
+      font-size: 1rem;
+      font-family: 'Sherika', sans-serif;
+      text-align: center;
     }
-    .watermark {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%) rotate(-30deg);
-      font-size: 3rem;
-      color: rgba(0, 0, 0, 0.1);
-      pointer-events: none;
-      z-index: 1000;
-      white-space: nowrap;
+
+    .login-button {
+      margin-top: 1rem;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      border-radius: 30px;
+      border: none;
+      background-color: #1e2e2f;
+      color: #fff;
+      cursor: pointer;
+      font-family: 'Sherika', sans-serif;
     }
-    canvas {
-      display: block;
-      margin: 0 auto;
-      position: relative;
-      z-index: 1;
+
+    .contact-info {
+      margin-top: 4rem;
+      font-size: 0.9rem;
+      line-height: 1.4;
     }
-    #pdf-overlay {
-      pointer-events: auto;
+
+    #pdf-container {
       display: none;
-      position: absolute;
-      top: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 100%;
-      height: 100%;
-      z-index: 10;
-      background: transparent;
-      pointer-events: auto;
     }
+
     #page-controls {
-      display: none;
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
       margin-top: 1rem;
     }
-    button {
+
+    #page-controls button {
       padding: 0.5rem 1rem;
-      margin: 0.5rem;
       font-size: 1rem;
       cursor: pointer;
+      font-family: 'Sherika', sans-serif;
     }
-    img.logo {
-      max-width: 180px;
-      margin: 2rem auto;
+
+    #page-info {
+      margin-top: 0.5rem;
+      font-size: 1rem;
     }
   </style>
 </head>
 <body oncontextmenu="return false" onkeydown="return disableShortcuts(event)">
   <img src="logo.png" class="logo" alt="Logo Evermore" />
-  <div class="watermark">Evermore | Acesso restrito</div>
-
   <div id="login-container" class="active">
-    <h2>Acesso Restrito</h2>
-    <input type="text" id="username" placeholder="Usuário" /><br /><br />
-    <input type="password" id="password" placeholder="Senha" /><br /><br />
-    <button onclick="login()">Entrar</button>
+    <h2>Portal do Aluno <strong>Evermore</strong></h2>
+    <input type="text" id="username" class="login-input" placeholder="Usuário" />
+    <input type="password" id="password" class="login-input" placeholder="Senha" />
+    <button class="login-button" onclick="login()">Entrar</button>
     <p id="login-error" style="color: red;"></p>
+
+    <div class="contact-info">
+      <strong>Contato</strong><br />
+      54 99143-7238<br />
+      comercial@evermoreingles.com.br<br />
+      evermoreingles.com.br
+    </div>
   </div>
 
   <div id="pdf-container">
     <div id="page-controls">
-      <div style="display: flex; justify-content: space-between; align-items: center; max-width: 700px; margin: 0 auto;">
-        <div style="text-align: left;">
-          <a href="https://drive.google.com/drive/folders/1MNCu2MDMtmjT7p68d-e9STrfwY9ISK05" target="_blank" style="color: white; text-decoration: none; font-weight: bold;">🎧 Listening Practice</a>
-        </div>
-        <div style="text-align: right;">
-          <img src="https://api.qrserver.com/v1/create-qr-code/?size=60x60&data=https://drive.google.com/drive/folders/1MNCu2MDMtmjT7p68d-e9STrfwY9ISK05" alt="QR Code">
-        </div>
-      </div>
       <button onclick="prevPage()">⬅ Página Anterior</button>
       <button onclick="nextPage()">Próxima Página ➡</button>
-      <p id="page-info"></p>
-      <div style="margin-top: 1rem;">
-        <input type="number" id="page-input" placeholder="Ir para página" style="width: 120px; padding: 4px;">
-        <button onclick="goToPage()">Ir</button>
-      </div>
     </div>
-    <div id="canvas-wrapper" style="position: relative; display: inline-block;">
-      <canvas id="pdf-render"></canvas>
-      <div id="pdf-overlay"></div>
-    </div>
+    <p id="page-info"></p>
+    <canvas id="pdf-render"></canvas>
   </div>
 
   <script>
@@ -118,24 +131,10 @@
     function login() {
       const user = document.getElementById("username").value;
       const pass = document.getElementById("password").value;
-      const overlay = document.getElementById("pdf-overlay");
 
       if (users[user] && users[user] === pass) {
-        fetch("https://script.google.com/macros/s/AKfycbyL9O5MCku67Kjrk30KT11BHXBZjJuJHXJW8fEyxr6biHYPxMoqWnKQ4b-MN6QeIvkE/exec" +
-          "?usuario=" + encodeURIComponent(user) +
-          "&navegador=" + encodeURIComponent(navigator.userAgent) +
-          "&so=" + encodeURIComponent(navigator.platform))
-        .then(res => console.log("Acesso registrado"))
-        .catch(err => console.error("Erro ao registrar acesso", err));
-
-        document.getElementById("login-container").classList.remove("active");
-        document.getElementById("pdf-container").classList.add("active");
-        document.getElementById("page-controls").style.display = "block";
-
-        setTimeout(() => {
-          overlay.style.display = "block";
-        }, 500);
-
+        document.getElementById("login-container").style.display = 'none';
+        document.getElementById("pdf-container").style.display = 'block';
         loadPDF();
       } else {
         document.getElementById("login-error").innerText = "Usuário ou senha inválidos.";
@@ -176,21 +175,6 @@
         pageNum--;
         renderPage();
       };
-
-      window.goToPage = () => {
-        const input = parseInt(document.getElementById("page-input").value);
-        if (!isNaN(input) && input >= 1 && input <= totalPages) {
-          pageNum = input;
-          renderPage();
-        } else {
-          alert("Número de página inválido.");
-        }
-      };
-
-      document.addEventListener("keydown", (e) => {
-        if (e.key === "ArrowRight") nextPage();
-        if (e.key === "ArrowLeft") prevPage();
-      });
     }
 
     function disableShortcuts(e) {
