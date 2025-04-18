@@ -58,10 +58,12 @@
       text-decoration: none;
     }
     .logo {
-      margin-top: 20px;
-      width: 660px;
+      margin: 40px auto 20px;
+      display: block;
+      max-width: 660px;
+      width: 90%;
       height: auto;
-      max-width: 90%;
+      object-fit: contain;
     }
     #top-bar {
       display: flex;
@@ -140,8 +142,8 @@
 </head>
 <body oncontextmenu="return false" onkeydown="return disableShortcuts(event)">
   <img src="logo.png" class="logo" alt="Logo Evermore" />
-  <img src="logo.png" class="logo" alt="Logo Evermore" />
   <div id="login-container">
+    <img src="logo.png" class="logo" alt="Logo Evermore" />
     <h2>Portal do Aluno <strong>Evermore</strong></h2>
     <input type="text" id="username" class="login-input" placeholder="Usuário"/>
     <input type="password" id="password" class="login-input" placeholder="Senha"/>
