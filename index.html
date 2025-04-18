@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -198,6 +197,23 @@
       const pass = document.getElementById("password").value;
 
       if (users[user] && users[user] === pass) {
+        const browser = navigator.userAgent;
+        const os = navigator.platform;
+
+        fetch("https://api.ipify.org?format=json")
+          .then(res => res.json())
+          .then(data => {
+            fetch("https://script.google.com/macros/s/AKfycbznKEuCNposm7a68Wk-QpkndPS3sJIjSSVsMKcYXfjTz0Wn7uQV2lfT5Zmae4JFy-Yx/exec", {
+              method: "POST",
+              body: JSON.stringify({
+                user: user,
+                browser: browser,
+                os: os,
+                ip: data.ip
+              })
+            });
+          });
+
         document.getElementById("login-container").style.display = "none";
         document.getElementById("pdf-container").style.display = "block";
         document.getElementById("pdf-overlay").style.display = "block";
